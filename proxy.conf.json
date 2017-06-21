@@ -1,0 +1,8 @@
+{
+  "/elastic": {
+    "target": "http://10.0.20.33:9200",
+    "secure": false,
+    "changeOrigin": true,
+    "pathRewrite": {"^/elastic" : ""}
+  }
+}

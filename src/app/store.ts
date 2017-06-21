@@ -1,115 +1,106 @@
-import { ObjectRecord } from './models';
+import { Injectable } from '@angular/core';
+import Dexie from 'dexie';
+import * as uuid from 'uuid/v4';
+import { ProjectObject, ProjectComponent, ProjectComponentInstance, ProjectFolder } from './models';
+import { encoders, decoders, frame, deframe, modes } from './util';
 
-interface Store {
-  get(storeName: string, query: string|IDBKeyRange): Promise<ObjectRecord> | ObjectRecord;
-  set(storeName: string, value: ObjectRecord): Promise<number|string>;
-  getAll(storeName: string, query: string[]): Promise<ObjectRecord[]> | ObjectRecord[];
-  setMany(storeName: string, values: ObjectRecord[]): Promise<(number|string)[]> | (number|string)[];
-}
+let constructorTableMap = {};
 
-export class IDBStore implements Store {
-  HEAD: string;
+@Injectable()
+export class Store extends Dexie {
+  components: Dexie.Table<ProjectComponent, string>;
+  instances: Dexie.Table<ProjectComponentInstance, string>;
+  folders: Dexie.Table<ProjectFolder, string>;
 
-  constructor(public name: string, public version: number = 1) {}
-  protected _db: IDBDatabase;
-  get db(): Promise<IDBDatabase> {
-    return this._db ? Promise.resolve(this._db) : this.init();
-  }
-
-  async set(storeName, value) {
-    let db = await this.db;
-    return new Promise((resolve, reject) => {
-      let store = db.transaction([storeName], 'readwrite').objectStore(storeName);
-      let req = store.put(value)
-      req.onsuccess = () => resolve(req.result);
-      req.onerror = () => reject(req.error);
+  constructor() {
+    super('store');
+    this.version(1).stores({
+      components: '_id,name',
+      instances: '_id,name',
+      folders: '_id,folder,name'
     });
+    this.components.mapToClass(ProjectComponent);
+    this.instances.mapToClass(ProjectComponentInstance);
+    this.folders.mapToClass(ProjectFolder);
+    constructorTableMap[ProjectComponent.name] = this.components;
+    constructorTableMap[ProjectComponentInstance.name] = this.instances;
+    constructorTableMap[ProjectFolder.name] = this.folders;
   }
 
-  async get(storeName, query) {
-    let db = await this.db;
-    return new Promise((resolve, reject) => {
-      let store = db.transaction([storeName]).objectStore(storeName);
-      let req = store.get(query)
-      req.onsuccess = () => resolve(req.result);
-      req.onerror = () => reject(req.error);
-    });
-  }
+  // start with a root object. find children at each depth level.
+  async *walkTree (object: ProjectObject, parentKeyName='folder') {
+    let tree = {};
+    let c = object.constructor;
+    let table = constructorTableMap[c.name];
+    if (!table) throw new Error('incompatible object');
+    let rootid = object._id;
 
-  async getAll(storeName): Promise<any[]> {
-    let db = await this.db;
-    return new Promise((resolve, reject) => {
-      let store = db.transaction([storeName]).objectStore(storeName);
-      let req = store.getAll();
-      req.onsuccess = () => resolve(req.result);
-      req.onerror = () => reject(req.error);
-    }) as Promise<any[]>;
-  }
+    let children = [], parents = [];
+    parents.push(rootid);
+    tree[rootid] = object;
+    object._children = {};
 
-  async getMany(storeName, keys): Promise<any[]> {
-    let db = await this.db;
-    let transaction = db.transaction([storeName]);
-    keys.sort(comparer);
-    let result = await new Promise((resolve, reject) => {
-      let i = 0;
-      let request = transaction.objectStore(storeName).openCursor();
-      let results = [];
-      request.onsuccess = (e) => {
-        let cursor = request.result;
-        if (!cursor) return resolve(results);
-        let key = cursor.key;
-        while (key > keys[i]) {
-          ++i
-          if (i === keys.length) {
-            return resolve(results);
-          }
+    let rootTree = tree[rootid];
+    let input;
+    while (true) {
+      // accept id of new root to find children for
+      if (input != null) {
+        let { root } = input;
+        if (tree[root] === undefined) {
+          console.log('root', root);
+          console.log('children', children, 'parents',  parents);
+          console.log(await table.get({_id: root}));
+          throw new Error('requested children were not loaded');
         }
-        if (key === keys[i]) {
-          results.push(cursor.value);
-          cursor.continue();
-        } else {
-          cursor.continue(keys[i]);
-        }
-      };
-      request.onerror = (e) => reject(e);
-    });
-    return result as any[];
-  }
+        input = yield tree[root];
 
-  async setMany(storeName, objects: any[]): Promise<string[]> {
-    let db = await this.db;
-    let transaction = db.transaction([storeName], 'readwrite');
-    let store = transaction.objectStore(storeName);
-    let result = <string[]>(await new Promise((resolve, reject) => {
-      let i = 0;
-      next();
-      function next() {
-        if (i < objects.length) {
-          store.put(objects[i++]).onsuccess = next;
-        } else {
-          resolve(objects.map(({ hash }) => hash));
-        }
+      } else {
+        input = yield rootTree;
       }
-    }));
-    return result;
-  }
 
-  init(): Promise<IDBDatabase> {
-    return new Promise((resolve, reject) => {
-      let req = indexedDB.open(this.name + '-store', this.version);
-      
-      req.onerror = () => reject(req.error);
-      req.onupgradeneeded = () => {
-        let db = req.result;
-        db.createObjectStore('objects', { keyPath: 'hash' });
-        db.createObjectStore('refs', { keyPath: 'name' });
-        db.createObjectStore('index');
+      let root, refresh;
+      // if input, get the child at input.root
+      if (input != null) {
+        ({ root, refresh } = input);
+
+        // unless explicit, dont re-fetch
+        if (tree[root] && !refresh) {
+          continue;
+        }
+        let parent = await table.get({ _id: root });
+        if (parent == null) throw new Error('invalid parent id');
+        tree[parent._id] = parent;
+        children = await table.where({ [parentKeyName]: root }).toArray();
+
+      } else if (parents.length > 0) {
+        refresh = true;
+        children = await table.where(parentKeyName).anyOf(parents).toArray();
+        parents = children.map(({_id}) => _id);
+
+      } else {
+        continue;
       }
-      req.onsuccess = () => resolve(this._db = req.result);
-    });
-  }
-}
+  
+      for (let child of children) {
+        let _id = child['_id'];
+        let parentId = child[parentKeyName];
 
-function comparer (a, b) {
-  return a < b? -1 : a > b ? 1 : 0;
+        // if loading child before level has been reached (rare)
+        if (!tree[parentId]) {
+          tree[parentId] = { _children: {} };
+        }
+        // add _children to parent 
+        else if (!tree[parentId]._children) {
+          tree[parentId]._children = {};
+        }
+
+        // were children loaded before 
+        if (tree[_id] && tree[_id]._children && !refresh) {
+          child._children = tree[_id]._children;
+        }
+
+        tree[parentId]._children[_id] = tree[_id] = child;
+      }
+    }
+  }
 }

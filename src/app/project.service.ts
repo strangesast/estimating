@@ -1,14 +1,13 @@
 import { Injectable } from '@angular/core';
-import { Commit } from './git';
-import * as sha1 from 'js-sha1';
+import { Resolve } from '@angular/router';
+import { Observable } from 'rxjs';
 
-import { modes } from './modes';
-
-const NAME = 'estimating';
 
 @Injectable()
-export class ProjectService {
-  HEAD: string;
-
+export class ProjectService implements Resolve<any> {
   constructor() { }
+
+  resolve() {
+    return Observable.of(null);
+  }
 }

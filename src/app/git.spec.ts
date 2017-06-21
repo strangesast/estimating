@@ -1,6 +1,7 @@
-import { GitStore, Db } from './git-idb';
+import { Store } from './store';
+import { Git } from './git';
 import * as uuid from 'uuid/v4';
-import { test } from './util';
+import { test } from './test-util';
 import { ProjectComponentInstance, ProjectComponent, ProjectFolder, Person, Project } from './models';
 
 describe('git stuff', () => {
@@ -14,8 +15,8 @@ describe('git stuff', () => {
   }));
 
   it ('should create example branch, save trees/commit', test(async () => {
-    let db = new Db();
-    let gs = new GitStore(db);
+    let db = new Store();
+    let gs = new Git(db);
 
     await db.delete();
     await db.open();

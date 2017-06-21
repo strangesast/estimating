@@ -1,9 +1,10 @@
 export class ProjectObject {
-  id: string;
+  _id: string;
   _previousHash?: string;
   _hash?: string;
   _path?: string;
   _buffer?: Uint8Array;
+  _children?: { [id: string]: ProjectObject };
   constructor(fields: Partial<ProjectObject>) {
     Object.assign(this, fields);
   }
@@ -40,11 +41,10 @@ export class ProjectFolder extends ProjectObject {
   folder: string; // uuid
   name: string;
   type: string; // type of components contained within.  'component'|'building'|'phase'
-  description: string;
+  description?: string;
   constructor(fields: Partial<ProjectFolder>) {
     super(fields);
   }
-
 }
 
 export class Project extends ProjectObject {
@@ -117,4 +117,8 @@ export interface Tree {
 
 export interface TreeObject {
   [name: string]: string | TreeObject;
+}
+
+export interface IndexMap {
+  [path: string]: IndexRecord;
 }
