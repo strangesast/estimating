@@ -17,6 +17,11 @@ import { Store } from './store';
 import { TreeDirective } from './tree.directive';
 import { HistoryComponent } from './history/history.component';
 import { ProjectSettingsComponent } from './project-settings/project-settings.component';
+import { TreeElementViewComponent } from './tree-element-view/tree-element-view.component';
+import { ObjToTypePipe } from './obj-to-type.pipe';
+import { HistoryChooserComponent } from './history-chooser/history-chooser.component';
+import { DashboardComponent } from './dashboard/dashboard.component';
+import { TreeComponent } from './tree/tree.component';
 
 @NgModule({
   imports: [
@@ -35,7 +40,12 @@ import { ProjectSettingsComponent } from './project-settings/project-settings.co
     ComponentTreeComponent,
     TreeDirective,
     HistoryComponent,
-    ProjectSettingsComponent
+    ProjectSettingsComponent,
+    TreeElementViewComponent,
+    ObjToTypePipe,
+    HistoryChooserComponent,
+    DashboardComponent,
+    TreeComponent
   ],
   providers: [ProjectService, Store],
   bootstrap: [AppComponent]

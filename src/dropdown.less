@@ -4,23 +4,40 @@
 @background: white;
 @arrow-size: 8px;
 
+@keyframes slidein {
+  from {
+    transform: translate(0, -10px);
+    opacity: 0;
+  }
+  to {
+    transform: translate(0, 0);
+    opacity: 1;
+  }
+}
+
 .dropdown {
   z-index: 2;
   position: relative;
   display: inline-block;
   & > span {
+    cursor: pointer;
+    &:active, &:focus {
+      transform: translate(0, 1px);
+    }
     &:hover {
       background-color: @hover-color;
     }
     &:focus {
       outline: none;
-      background-color: @active-color;
+      //background-color: @active-color;
     }
     &:focus + div {
       display: flex;
     }
   }
   & > div {
+    animation-name: slidein;
+    animation-duration: 0.2s;
     border: 1px solid @border-color;
     &::after, &::before {
       content: '';

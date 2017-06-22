@@ -1,3 +1,51 @@
+@border-color: #bdbdbd;
 :host {
   display: block;
+}
+
+.tree {
+  position: relative;
+  margin: 0 8px;
+
+  & > * {
+    transition: transform 0.5s ease;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+    border: 1px solid @border-color;
+    //margin-bottom: -1px;
+    background: white;
+    & > .icon {
+      padding: 8px;
+    }
+
+    & > .name {
+    }
+
+    & > .open.collapsed {
+      transform: rotate(180deg);
+    }
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: 40px;
+    box-sizing: border-box;
+    .generate-levels(@n, @i: 0) when(@i =< @n) {
+      &[depth='@{i}'] {
+        margin-left: @i * 20px;
+      }
+      .generate-levels(@n, (@i+1));
+    }
+    .generate-levels(50);
+  }
+
+  &.activeChild > *:not(.active) {
+    background: lightgrey;
+  }
+}
+.spacer {
+  flex-grow: 1;
 }

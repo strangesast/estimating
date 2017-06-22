@@ -1,48 +1,52 @@
 import { ViewChild, Component, OnInit, ComponentFactoryResolver, AfterViewInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import * as uuid from 'uuid/v4';
+import { Subject } from 'rxjs';
 import { ProjectFolder } from '../models';
+import { ProjectTreeService } from '../project-tree.service';
 import { Store } from '../store';
 import * as d3 from 'd3';
 
-@Component({
-  selector: 'app-project-tree',
+@Component({ selector: 'app-project-tree',
   templateUrl: './project-tree.component.html',
   styleUrls: ['./project-tree.component.less']
 })
 export class ProjectTreeComponent implements OnInit, AfterViewInit {
   @ViewChild('tree') tree
+  treeValue: any;
+  activeChild: string = null;
+  ngUnsubscribe: Subject<boolean> = new Subject();
 
-  constructor(private store: Store) { }
+  constructor(private project: ProjectTreeService, private store: Store, private route: ActivatedRoute) { }
 
   ngOnInit() {
-    let root = new ProjectFolder({ type: 'building', name: 'root', folder: null, _id: uuid() });
-    let folders = [root];
-    
-    for (let i=0; i < 10; i++) {
-      let j = Math.floor(Math.random()*folders.length);
-      let parent = folders[j];
-      let folder = new ProjectFolder({ type: 'building', folder: parent._id, name: `Folder ${ i+1 }`, _id: uuid() });
-      folders.push(folder);
-    }
+    this.project.buildingFolders.takeUntil(this.ngUnsubscribe).subscribe(vals => this.treeValue = vals);
 
-    (async () => {
-      await this.store.folders.clear();
-      await this.store.folders.bulkAdd(folders);
-      let gen = this.store.walkTree(root);
+    this.route.params.subscribe(() => console.log('params'));
 
-      let val;
-      val = (await gen.next()).value;
-      val = (await gen.next()).value;
-      let i = Math.floor(Math.random()*folders.length);
-      let one = folders[i]._id;
-      console.log('i', i);
-      //await gen.next(one);
-      val = (await gen.next({ root: one, refresh: false })).value;
-      console.log('one', one, val);
-    })();
+    this.project.activeChild.subscribe(child => this.activeChild = child);
   }
 
   ngAfterViewInit() {
     //console.log(d3.select(this.tree.nativeElement));
+  }
+
+  ngOnDestroy() {
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
+  }
+
+  clicked(d) {
+    if (!(d instanceof d3.hierarchy)) {
+      throw new Error('invalid type');
+    }
+    if (d.children) {
+      d._children = d.children;
+      delete d.children;
+    } else if (d._children) {
+      d.children = d._children;
+      delete d._children;
+    }
+    this.treeValue = this.treeValue.copy();
   }
 }

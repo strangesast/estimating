@@ -1,7 +1,9 @@
-<div class="tree">
-  <ng-template appTree let-element [tree]="tree">
-    <div>
-      <span>{{ element._id }}</span>{{ element.name }}
-    </div>
-  </ng-template>
+<div class="tree" [class.activeChild]="activeChild">
+  <div *appTree="let element of treeValue" [attr.depth]="element.y" [class.active]="activeChild == element.data._id" (click)="clicked(element)">
+    <span class="icon fa fa-folder-o"></span>
+    <a [routerLink]="[ (element.data | objToType), element.data._id ]" class="name">{{ element.data.name }}</a>
+    <span class="spacer"></span>
+    <span class="icon open fa fa-angle-down" [class.collapsed]="element._children" *ngIf="(element.children || element._children) && (element.children || element._children).length > 0"></span>
+    <span class="icon fa fa-ellipsis-h" *ngIf="!element.children && !element._children"></span>
+  </div>
 </div>

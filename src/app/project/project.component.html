@@ -1,48 +1,31 @@
-<header>
-  <div>
-    <span (click)="side = !side" class="fa fa-bars fa-lg fa-fw icon"></span>
-    <a routerLink="/" class="brand">Estimating</a>
-  </div>
-  <div><span class="title">{{ title }}</span></div>
-  <div>
-    <div class="dropdown">
-      <span tabindex="-1" class="fa fa-user fa-lg fa-fw icon"></span>
-      <div>
-        <a routerLinkActive="active" routerLink="/user">User Profile</a>
-        <a>Log Out</a>
-      </div>
-    </div>
-    <div class="dropdown settings">
-      <span tabindex="-1" class="fa fa-cog fa-lg fa-fw icon"></span>
-      <div>
-        <a routerLinkActive="active" [routerLink]="['settings']">Project Settings</a>
-      </div>
-    </div>
-    <div class="dropdown history">
-      <span tabindex="-1" class="fa fa-history fa-lg fa-fw icon"></span>
-      <div>
-        <div class="nopad nohover arrows">
-          <span class="fa fa-undo"></span>
-          <span class="fa fa-undo fa-flip-horizontal"></span>
-        </div>
-        <span class="inactive">No history</span>
-        <a routerLinkActive="active" [routerLink]="['history']">See full history</a>
-      </div>
+<app-dashboard>
+  <a brand routerLink="/" class="brand">Estimating</a>
+  <!--<span title class="title">{{ title }}</span>-->
+  <div top-right class="dropdown">
+    <span tabindex="-1" class="fa fa-user fa-lg fa-fw icon"></span>
+    <div>
+      <a routerLinkActive="active" routerLink="/user">User Profile</a>
+      <a>Log Out</a>
     </div>
   </div>
-</header>
-<div>
-  <div class="main">
-    <div class="content">
-      <router-outlet></router-outlet>
+  <div top-right class="dropdown settings">
+    <span tabindex="-1" class="fa fa-cog fa-lg fa-fw icon"></span>
+    <div>
+      <a routerLinkActive="active" [routerLink]="['settings']">Project Settings</a>
     </div>
   </div>
-  <div class="side">
-    <input placeholder="search" class="search">
-    <div class="list">
-      <a routerLinkActive="active" [routerLink]="['tree']"><span class="icon fa fa-fw fa-list"></span><span>Tree</span></a>
-      <a routerLinkActive="active" [routerLink]="['components']"><span class="icon fa fa-fw fa-cubes"></span><span>Components</span></a>
-      <a routerLinkActive="active" [routerLink]="['reports']"><span class="icon fa fa-fw fa-area-chart"></span><span>Reports</span></a>
+  <div top-right class="dropdown history">
+    <span tabindex="-1" class="fa fa-history fa-lg fa-fw icon"></span>
+    <div>
+      <app-history-chooser [history]="history" (indexChange)="changeHistory($event)" [index]="historyIndex" class="nopad nohover"></app-history-chooser>
+      <a routerLinkActive="active" [routerLink]="['history']">See full history</a>
     </div>
   </div>
-</div>
+  <input side placeholder="search" class="search">
+  <div side class="list">
+    <a routerLinkActive="active" [routerLink]="['tree']"><span class="icon fa fa-fw fa-list"></span><span>Tree</span></a>
+    <a routerLinkActive="active" [routerLink]="['components']"><span class="icon fa fa-fw fa-cubes"></span><span>Components</span></a>
+    <a routerLinkActive="active" [routerLink]="['reports']"><span class="icon fa fa-fw fa-area-chart"></span><span>Reports</span></a>
+  </div>
+  <router-outlet></router-outlet>
+</app-dashboard>

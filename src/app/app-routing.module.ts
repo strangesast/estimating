@@ -8,6 +8,8 @@ import { HistoryComponent } from './history/history.component';
 import { ComponentTreeComponent } from './component-tree/component-tree.component';
 import { ReportsComponent } from './reports/reports.component';
 import { SettingsComponent } from './settings/settings.component';
+import { TreeElementViewComponent } from './tree-element-view/tree-element-view.component';
+import { ProjectTreeService } from './project-tree.service';
 
 const routes: Routes = [
   { path: '', redirectTo: 'project', pathMatch: 'full' },
@@ -18,7 +20,13 @@ const routes: Routes = [
     component: ProjectComponent,
     children: [
       { path: '', redirectTo: 'tree', pathMatch: 'full' },
-      { path: 'tree', component: ProjectTreeComponent },
+      { path: 'tree',
+        resolve: { project: ProjectTreeService },
+        children: [
+          { path: '', component: ProjectTreeComponent },
+          { path: ':type/:id', component: TreeElementViewComponent }
+        ]
+      },
       { path: 'settings', component: SettingsComponent },
       { path: 'history', component: HistoryComponent },
       { path: 'components', component: ComponentTreeComponent },
@@ -35,7 +43,8 @@ const routes: Routes = [
     RouterModule
   ],
   providers: [
-    ProjectComponent
+    ProjectComponent,
+    ProjectTreeService
   ]
 })
 export class AppRoutingModule {}

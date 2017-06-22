@@ -1,0 +1,11 @@
+<div class="undo-redo">
+  <span [class.disabled]="historyIndex == history.length - 1" title="undo" (click)="setHistoryIndex(historyIndex + 1)" class="fa fa-undo"></span>
+  <span [class.disabled]="historyIndex == 0" title="redo" (click)="setHistoryIndex(historyIndex - 1)" class="fa fa-undo fa-flip-horizontal"></span>
+</div>
+<div class="states">
+  <div *ngFor="let state of visibleHistory" (click)="setHistoryIndex(state.index)">
+    <span *ngIf="state.index == historyIndex" class="fa fa-fw fa-chevron-right"></span>
+    <span class="description" [title]="state.description">{{ state.description }}</span>
+  </div>
+  <div *ngIf="history.length == 0" class="inactive">No history</div>
+</div>

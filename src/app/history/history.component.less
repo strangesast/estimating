@@ -1,0 +1,101 @@
+@border-color: #bdbdbd;
+@background: white;
+:host {
+  display: block;
+}
+
+@small: 40px;
+@large: 100px;
+@arrow-size: 8px;
+
+:host > div {
+  margin-left: @large/2;
+  display: flex;
+  position: relative;
+
+  &:before {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 100%;
+    top: 0;
+    border-left: 1px solid @border-color;
+  }
+  &:first-child:before {
+    top: 50%;
+  }
+  &:last-child:before, &:first-child:before {
+    height: 50%;
+  }
+  & > img {
+    position: absolute;
+    display: block;
+    border-radius: 50%;
+    background: @background;
+    border: 1px solid @border-color;
+  }
+  &.muted > .card {
+    opacity: 0.5;
+  }
+
+  & > .card {
+    border: 1px solid @border-color;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+    box-sizing: border-box;
+    padding: 8px 16px;
+    background: @background;
+    position: relative;
+
+    &::after, &::before {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 0;
+    }
+
+    &:after {
+      left:-@arrow-size;
+      top: @small/2 - @arrow-size;
+      border-top: @arrow-size solid transparent;
+      border-bottom: @arrow-size solid transparent;
+      border-right: @arrow-size solid @background;
+    }
+
+    &:before {
+      left:-(@arrow-size + sqrt(2));
+      top: @small/2 - (@arrow-size + sqrt(2));
+      border-top: (@arrow-size + sqrt(2)) solid transparent;
+      border-bottom: (@arrow-size + sqrt(2)) solid transparent;
+      border-right: (@arrow-size + sqrt(2)) solid @border-color;
+    }
+  }
+
+  &.major {
+    padding: 30px 0;
+    & > img {
+      width: @large;
+      height: @large;
+      margin-left: -@large/2
+    }
+    & > .card {
+      margin-left: (@large / 2) + 10px;
+      & > * {
+        display: block;
+      }
+    }
+  }
+  &.minor {
+    padding: 20px 0;
+    & > img {
+      width: @small;
+      height: @small;
+      margin-left: -@small/2
+    }
+    & > .card {
+      margin-left: (@small / 2) + 10px;
+      min-height: @small;
+      display: flex;
+      align-items: center;
+    }
+  }
+}

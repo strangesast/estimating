@@ -1,0 +1,22 @@
+<header>
+  <div>
+    <span (click)="side = !side" class="fa fa-bars fa-lg fa-fw icon"></span>
+    <ng-content select="[brand]"></ng-content>
+  </div>
+  <div>
+    <ng-content select="[title]"></ng-content>
+  </div>
+  <div>
+    <ng-content select="[top-right]"></ng-content>
+  </div>
+</header>
+<div>
+  <div class="main">
+    <div class="content">
+      <ng-content></ng-content>
+    </div>
+  </div>
+  <div class="side">
+    <ng-content select="[side]"></ng-content>
+  </div>
+</div>

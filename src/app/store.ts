@@ -47,9 +47,6 @@ export class Store extends Dexie {
       if (input != null) {
         let { root } = input;
         if (tree[root] === undefined) {
-          console.log('root', root);
-          console.log('children', children, 'parents',  parents);
-          console.log(await table.get({_id: root}));
           throw new Error('requested children were not loaded');
         }
         input = yield tree[root];

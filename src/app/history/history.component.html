@@ -1,3 +1,12 @@
-<p>
-  history works!
-</p>
+<div class="minor" *ngFor="let state of history" [class.muted]="state.index < historyIndex">
+  <img src="/assets/placeholder.png"/>
+  <div class="card">{{ state.description }}</div>
+</div>
+<div class="major">
+  <img src="/assets/placeholder.png"/>
+  <div class="card">
+    <span class="title">{{ lastCommit.description }}</span>
+    <span>{{ lastCommit.date | date }}</span>
+    <p>More detail about this commit.</p>
+  </div>
+</div>
