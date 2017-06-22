@@ -15,6 +15,8 @@ import { ProjectTreeComponent } from './project-tree/project-tree.component';
 import { ComponentTreeComponent } from './component-tree/component-tree.component';
 import { Store } from './store';
 import { TreeDirective } from './tree.directive';
+import { HistoryComponent } from './history/history.component';
+import { ProjectSettingsComponent } from './project-settings/project-settings.component';
 
 @NgModule({
   imports: [
@@ -31,7 +33,9 @@ import { TreeDirective } from './tree.directive';
     ReportsComponent,
     ProjectTreeComponent,
     ComponentTreeComponent,
-    TreeDirective
+    TreeDirective,
+    HistoryComponent,
+    ProjectSettingsComponent
   ],
   providers: [ProjectService, Store],
   bootstrap: [AppComponent]

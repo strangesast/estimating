@@ -134,7 +134,7 @@ export class Git extends Dexie {
     for (let table of tables) {
       let name = table.name;
       for (let record of await table.toArray()) {
-        let path = name + '/' + record.id;
+        let path = name + '/' + record._id;
         map[path] = wrapObject(record);
       }
     }
@@ -328,8 +328,8 @@ export class Git extends Dexie {
 }
 
 function wrapObject (object: ProjectObject): IndexRecord {
-  let id = object.id;
-  if (typeof id !== 'string') {
+  let _id = object._id;
+  if (typeof _id !== 'string') {
     throw new Error('invalid object id');
   }
   calculateHash(object);
@@ -348,7 +348,7 @@ function calculateHash (object: ProjectObject) {
     throw new Error('invalid object type')
   }
   let previousHash = object._previousHash;
-  let path = type + '/' + object.id;
+  let path = type + '/' + object._id;
   let body:any = JSON.stringify(object);
   body = encoders['blob'](body);
   let buffer = frame({ type: 'blob', body });

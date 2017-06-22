@@ -3,30 +3,30 @@
     <span (click)="side = !side" class="fa fa-bars fa-lg fa-fw icon"></span>
     <a routerLink="/" class="brand">Estimating</a>
   </div>
-  <div><span class="title">{{ title }}aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</span></div>
+  <div><span class="title">{{ title }}</span></div>
   <div>
     <div class="dropdown">
       <span tabindex="-1" class="fa fa-user fa-lg fa-fw icon"></span>
       <div>
-        <a routerLinkActive="active" [routerLink]="['profile']">User Profile</a>
-        <a (click)="logout()">Log Out</a>
+        <a routerLinkActive="active" routerLink="/user">User Profile</a>
+        <a>Log Out</a>
       </div>
     </div>
-    <div class="dropdown">
+    <div class="dropdown settings">
       <span tabindex="-1" class="fa fa-cog fa-lg fa-fw icon"></span>
       <div>
-        <a routerLinkActive="active">Project Settings</a>
+        <a routerLinkActive="active" [routerLink]="['settings']">Project Settings</a>
       </div>
     </div>
     <div class="dropdown history">
       <span tabindex="-1" class="fa fa-history fa-lg fa-fw icon"></span>
       <div>
-        <div class="nopad inactive arrows">
+        <div class="nopad nohover arrows">
           <span class="fa fa-undo"></span>
-          <span class="fa fa-undo redo"></span>
+          <span class="fa fa-undo fa-flip-horizontal"></span>
         </div>
         <span class="inactive">No history</span>
-        <a>See full history</a>
+        <a routerLinkActive="active" [routerLink]="['history']">See full history</a>
       </div>
     </div>
   </div>
@@ -40,9 +40,9 @@
   <div class="side">
     <input placeholder="search" class="search">
     <div class="list">
-      <a><span class="icon fa fa-fw fa-list"></span><span>Tree</span></a>
-      <a><span class="icon fa fa-fw fa-cubes"></span><span>Components</span></a>
-      <a><span class="icon fa fa-fw fa-area-chart"></span><span>Reports</span></a>
+      <a routerLinkActive="active" [routerLink]="['tree']"><span class="icon fa fa-fw fa-list"></span><span>Tree</span></a>
+      <a routerLinkActive="active" [routerLink]="['components']"><span class="icon fa fa-fw fa-cubes"></span><span>Components</span></a>
+      <a routerLinkActive="active" [routerLink]="['reports']"><span class="icon fa fa-fw fa-area-chart"></span><span>Reports</span></a>
     </div>
   </div>
 </div>
