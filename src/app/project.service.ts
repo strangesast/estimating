@@ -56,11 +56,13 @@ export class ProjectService implements Resolve<any> {
     let val;
     val = (await gen.next()).value;
     val = (await gen.next()).value;
+    console.log('val', val);
     //for await (val of gen) {
     //}
 
     let tree = d3.tree().nodeSize([0, 1]);
-    let node = tree(d3.hierarchy(val, (d) => d._children && Object.keys(d._children).map(id => d._children[id])));
+    let node = tree(d3.hierarchy(val.node, (d) => d._children && Object.keys(d._children).map(id => d._children[id])));
+    console.log(node);
 
     this.buildingFolders.next(node);
     return this.buildingFolders;

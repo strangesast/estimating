@@ -3,7 +3,7 @@
     <span class="icon fa fa-folder-o"></span>
     <a [routerLink]="[ (element.data | objToType), element.data._id ]" class="name">{{ element.data.name }}</a>
     <span class="spacer"></span>
-    <span class="icon open fa fa-angle-down" [class.collapsed]="element._children" *ngIf="(element.children || element._children) && (element.children || element._children).length > 0"></span>
-    <span class="icon fa fa-ellipsis-h" *ngIf="!element.children && !element._children"></span>
+    <span class="icon open fa fa-angle-down" [class.collapsed]="element._children" *ngIf="(element.children || element._children)?.length"></span>
+    <span class="icon fa fa-ellipsis-h" *ngIf="!element.data.children && !element.data._children"></span>
   </div>
 </div>

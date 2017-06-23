@@ -62,7 +62,8 @@ export class TreeDirective implements OnChanges {
     });
   
     data.forEach((d, i) => {
-      d.y = d.y - 1;
+      // bad
+      //d.y = d.y - 1;
       d.x = i;
     });
 

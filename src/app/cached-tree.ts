@@ -11,6 +11,7 @@ export class CachedTree {
   tree = {};
   private parents: string[];
   private _root: ProjectObject;
+  private depth: -1;
 
   set root(root) {
     delete this.parents;
@@ -25,7 +26,7 @@ export class CachedTree {
   }
 
   public async next(input?: { root: string, refresh: boolean }): Promise<IteratorResult<HiearchyNode>> {
-    let { table, tree, parents, parentKeyName } = this;
+    let { table, tree, parents, parentKeyName, depth } = this;
     let refresh = false, root = this.root._id, children, done = false, value;
 
     if (input) {
@@ -50,6 +51,7 @@ export class CachedTree {
       children = [];
       done = true;
     }
+    depth++;
 
     let nextParents = [];
     for (let child of children) {
@@ -76,6 +78,7 @@ export class CachedTree {
       tree[parentId]._children[_id] = tree[_id] = child;
       nextParents.push(_id);
     }
+    // any parents without children still get ._children
     if (parents && parents.length) {
       for (let id of parents) {
         tree[id]._children = tree[id]._children || {};
@@ -83,7 +86,7 @@ export class CachedTree {
     }
     this.parents = nextParents;
 
-    value = tree[root];
+    value = { node: tree[root], depth };
 
     return { value, done };
   }

@@ -40,13 +40,6 @@ export class ProjectTreeComponent implements OnInit, AfterViewInit {
     if (!(d instanceof d3.hierarchy)) {
       throw new Error('invalid type');
     }
-    if (d.children) {
-      d._children = d.children;
-      delete d.children;
-    } else if (d._children) {
-      d.children = d._children;
-      delete d._children;
-    }
-    this.treeValue = this.treeValue.copy();
+    console.log(d);
   }
 }
