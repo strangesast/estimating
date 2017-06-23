@@ -73,4 +73,8 @@ export class TreeService {
     this.path = await this.cachedTree.getPath(rootId);
     this.activePathIndex = this.path.length - 1;
   }
+
+  open(element) {
+    console.log(element);
+  }
 }

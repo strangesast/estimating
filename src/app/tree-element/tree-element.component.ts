@@ -1,4 +1,4 @@
-import { Input, Component, OnInit } from '@angular/core';
+import { HostListener, Input, Component, OnInit } from '@angular/core';
 import { TreeService } from '../tree.service';
 
 export const treeElementSelector = 'app-tree-element';
@@ -17,8 +17,11 @@ export class TreeElementComponent implements OnInit {
   @Input() height: number;
   @Input() children: any[];
 
-  constructor(private tree: TreeService) { }
+  constructor(public tree: TreeService) { }
 
   ngOnInit() {}
 
+  @HostListener('dblclick') dblClick() {
+    this.tree.open(this.data);
+  }
 }
