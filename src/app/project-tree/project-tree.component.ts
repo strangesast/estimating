@@ -17,6 +17,27 @@ export class ProjectTreeComponent implements OnInit, AfterViewInit {
   activeChild: string = null;
   ngUnsubscribe: Subject<boolean> = new Subject();
 
+  cachedTree;
+
+  view = 'list';
+  viewToClass = {
+    list: 'fa-th-list',
+    icons: 'fa-th',
+    'large-icons': 'fa-th-large',
+    tree: 'fa-align-left fa-flip-vertical'
+  }
+
+  setView(view) {
+    this.view = view;
+  }
+
+  path = ['root', 'folder 1', 'folder 2', 'folder 3'];
+  pathIndex = 3;
+
+  setPathIndex(i) {
+    this.pathIndex = i;
+  }
+
   constructor(private project: ProjectTreeService, private store: Store, private route: ActivatedRoute) { }
 
   ngOnInit() {

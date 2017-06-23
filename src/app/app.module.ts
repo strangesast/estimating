@@ -22,6 +22,8 @@ import { ObjToTypePipe } from './obj-to-type.pipe';
 import { HistoryChooserComponent } from './history-chooser/history-chooser.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { TreeComponent } from './tree/tree.component';
+import { TreeElementComponent } from './tree-element/tree-element.component';
+import { TreeService } from './tree.service';
 
 @NgModule({
   imports: [
@@ -45,9 +47,13 @@ import { TreeComponent } from './tree/tree.component';
     ObjToTypePipe,
     HistoryChooserComponent,
     DashboardComponent,
-    TreeComponent
+    TreeComponent,
+    TreeElementComponent
   ],
-  providers: [ProjectService, Store],
-  bootstrap: [AppComponent]
+  providers: [ProjectService, Store, TreeService],
+  bootstrap: [AppComponent],
+  entryComponents: [
+    TreeElementComponent
+  ]
 })
 export class AppModule { }

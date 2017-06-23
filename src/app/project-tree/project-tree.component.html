@@ -1,3 +1,25 @@
+<header>
+  <div class="path">
+    <div><span>Project:</span></div>
+    <div *ngFor="let p of path; let i = index" [class.inactive]="i > pathIndex" (click)="setPathIndex(i)"><span>{{ p }}</span></div>
+  </div>
+  <span class="spacer"></span>
+  <div top-right class="dropdown settings">
+    <span tabindex="-1" class="fa fa-lg fa-fw icon" [ngClass]="viewToClass[view]"></span>
+    <div>
+      <a *ngIf="view != 'list'" (click)="setView('list')" title="list" class="fa fa-th-list fa-lg fa-fw icon"></a>
+      <a *ngIf="view != 'icons'" (click)="setView('icons')" title="icons" class="fa fa-th fa-lg fa-fw icon"></a>
+      <a *ngIf="view != 'large-icons'" (click)="setView('large-icons')" title="large icons" class="fa fa-th-large fa-lg fa-fw icon"></a>
+      <a *ngIf="view != 'tree'" (click)="setView('tree')" title="tree" class="fa fa-align-left fa-flip-vertical fa-lg fa-fw icon"></a>
+    </div>
+  </div>
+</header>
+<div class="filters-header" [class.hidden]="view != 'list'">
+  <div class="icon fa fa-fw"></div>
+  <div class='name'><span>Name</span><span class="icon fa fa-arrow-down"></span></div>
+</div>
+<app-tree [view]="view"></app-tree>
+<!--
 <div class="tree" [class.activeChild]="activeChild">
   <div *appTree="let element of treeValue" [attr.depth]="element.y" [class.active]="activeChild == element.data._id" (click)="clicked(element)">
     <span class="icon fa fa-folder-o"></span>
@@ -7,3 +29,4 @@
     <span class="icon fa fa-ellipsis-h" *ngIf="!element.data.children && !element.data._children"></span>
   </div>
 </div>
+-->

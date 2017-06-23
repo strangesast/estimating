@@ -16,13 +16,13 @@
 }
 
 .dropdown {
-  z-index: 2;
   position: relative;
   display: inline-block;
   & > span {
+    padding: 10px;
     cursor: pointer;
     &:active, &:focus {
-      transform: translate(0, 1px);
+      border-top: 1px solid transparent;
     }
     &:hover {
       background-color: @hover-color;
@@ -35,10 +35,17 @@
       display: flex;
     }
   }
+  &.stay > div:hover {
+    display: flex;
+  }
+  & > div:active {
+    display: flex;
+  }
   & > div {
     animation-name: slidein;
     animation-duration: 0.2s;
     border: 1px solid @border-color;
+    z-index: 10;
     &::after, &::before {
       content: '';
       position: absolute;
@@ -64,12 +71,8 @@
 
     position: absolute;
     display: none;
-    &:hover {
-      display: flex;
-    }
     top: ~"calc(100% + 4px)";
     right: 0;
-    min-width: 120px;
     background-color: @background;
     box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
     border-radius: 2px;

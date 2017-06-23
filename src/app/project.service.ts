@@ -37,7 +37,10 @@ export class ProjectService implements Resolve<any> {
   private _buildingFolders;
   buildingFolders: BehaviorSubject<ProjectFolder[]> = new BehaviorSubject([]);
 
+  cachedTree;
+
   async init() {
+    /*
     let root = new ProjectFolder({ type: 'building', name: 'root', folder: null, _id: uuid() });
     let folders = [root];
     
@@ -52,6 +55,7 @@ export class ProjectService implements Resolve<any> {
     await this.store.folders.bulkAdd(folders);
 
     let gen = new CachedTree(root, this.store.folders);
+    this.cachedTree =gen;
 
     let val;
     val = (await gen.next()).value;
@@ -66,6 +70,8 @@ export class ProjectService implements Resolve<any> {
 
     this.buildingFolders.next(node);
     return this.buildingFolders;
+    */
+    return Promise.resolve();
 
     //val = (await gen.next()).value;
     //val = (await gen.next()).value;

@@ -14,7 +14,7 @@
       <a routerLinkActive="active" [routerLink]="['settings']">Project Settings</a>
     </div>
   </div>
-  <div top-right class="dropdown history">
+  <div top-right class="dropdown history stay">
     <span tabindex="-1" class="fa fa-history fa-lg fa-fw icon"></span>
     <div>
       <app-history-chooser [history]="history" (indexChange)="changeHistory($event)" [index]="historyIndex" class="nopad nohover"></app-history-chooser>
@@ -23,7 +23,7 @@
   </div>
   <input side placeholder="search" class="search">
   <div side class="list">
-    <a routerLinkActive="active" [routerLink]="['tree']"><span class="icon fa fa-fw fa-list"></span><span>Tree</span></a>
+    <a routerLinkActive="active" [routerLink]="['tree']"><span class="icon fa fa-fw fa-align-left fa-flip-vertical"></span><span>Tree</span></a>
     <a routerLinkActive="active" [routerLink]="['components']"><span class="icon fa fa-fw fa-cubes"></span><span>Components</span></a>
     <a routerLinkActive="active" [routerLink]="['reports']"><span class="icon fa fa-fw fa-area-chart"></span><span>Reports</span></a>
   </div>
