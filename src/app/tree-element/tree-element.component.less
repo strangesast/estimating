@@ -2,8 +2,13 @@
 @background: white;
 
 
-:host {
+:host.moving {
   z-index: 1;
+  &.exiting, &.entering {
+    z-index: 0;
+  }
+}
+:host {
   //transition: width 0.5s ease, transform 0.5s ease;
   position: absolute;
   user-select: none;
@@ -22,18 +27,27 @@
   border: 1px solid @border-color;
   background: @background;
   align-items: center;
-  width: 100%;
-  height: 41px;
+  //width: 100%;
+  //height: 41px;
+
+  & > .name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 
   & > .icon {
     padding: 8px;
+    &.background:hover {
+      background: rgba(0, 0, 0, 0.05);
+    }
   }
 
-  &.exiting, &.entering {
-    z-index: 0;
-  }
   & > .expand {
     display: none;
+  }
+  & > .grip {
+    cursor: grab;
   }
 }
 

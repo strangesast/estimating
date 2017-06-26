@@ -6,3 +6,11 @@ html, body {
   width: 100%;
   background-color: #f9f9f9;
 }
+
+.fa.fa-grip:before {
+  content: "\f142\202F\f142\202F\f142";
+}
+
+.fa.fa-grip-large:before {
+  content: "\f142\202F\f142\202F\f142\202F\f142\202F\f142\202F\f142\202F\f142";
+}

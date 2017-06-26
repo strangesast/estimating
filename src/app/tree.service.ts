@@ -40,32 +40,6 @@ export class TreeService {
 
   }
 
-  calculate() {
-    let treeBuilder = tree().nodeSize([0, 1]);
-    let root = hierarchy(this.cachedTree.root, (d) => d._children && Object.keys(d._children).map(id => d._children[id]))
-    let node = treeBuilder(root);
-    let data = [];
-    if (this.viewType == 'tree') {
-      node.eachBefore(n => {
-        if (n !== node) {
-          data.push(n);
-        }
-      });
-      data.forEach((d, i) => {
-        d.y = d.y - 1;
-        d.x = i;
-      });
-    } else {
-      for (let i=0; i<node.children.length; i++) {
-        let child = node.children[i];
-        child.x = i;
-        child.y = 0;
-        data.push(child);
-      }
-    }
-    return data;
-  }
-
   async updateRoot(rootId) {
   }
 

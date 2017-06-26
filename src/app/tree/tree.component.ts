@@ -11,6 +11,9 @@ import { HiearchyNode, Selection } from 'd3';
 import * as d3 from 'd3';
 
 let elementHeight = 40;
+
+const iconWidth = 150;
+const iconPadding = 10;
  
 // handle opening / closing 
 @Component({
@@ -51,17 +54,14 @@ export class TreeComponent implements OnInit, OnChanges {
     if (!this.tree.ready) {
       await this.tree.init();
     }
-    let data = this.tree.calculate();
-
     this.selection = d3.select(this._viewContainer.element.nativeElement);
-    this.update(data, this.viewType);
+    this.update(this.tree.cachedTree.root, this.viewType, null, false);
   }
 
   ngOnChanges(changes: SimpleChanges) {
     if (!this.tree.ready || !this.selection) return;
     if ('viewType' in changes) {
-      let data = this.tree.calculate();
-      this.update(data, changes['viewType'].currentValue, changes['viewType'].previousValue);
+      this.update(this.tree.cachedTree.root, changes['viewType'].currentValue, changes['viewType'].previousValue);
     }
   }
 
@@ -72,97 +72,194 @@ export class TreeComponent implements OnInit, OnChanges {
     return componentRef.location.nativeElement;
   }
 
-  update(data, viewType, oldViewType?) {
-    let viewContainer = this._viewContainer;
-    let el = viewContainer.element.nativeElement;
-    let { width } = el.getBoundingClientRect();
+  destroyChild(view) {
+    this._viewContainer.remove(this._viewContainer.indexOf(view));
+  }
 
+  treeBuilder = d3.tree().nodeSize([0, 1]);
+
+  update(node, viewType, oldViewType?, animate=true) {
+    let root;
+    if (viewType == 'tree') {
+      root = d3.hierarchy(node, (d) => d._children && Object.keys(d._children).map(id => d._children[id]))
+    } else {
+      root = d3.hierarchy(node, (d) => d == node || (d._id in node._children) ? (d._children && Object.keys(d._children).map(id => d._children[id])) : null );
+    }
+
+    // add x, y
+    this.treeBuilder(root);
+
+    let data = [];
+    if (this.viewType == 'tree') {
+      root.eachBefore(n => {
+        if (n !== root) {
+          data.push(n);
+        }
+      });
+      data.forEach((d, i) => {
+        d.y = d.y - 1;
+        d.x = i;
+      });
+    } else {
+      for (let i=0; i<root.children.length; i++) {
+        let child = root.children[i];
+        child.x = i;
+        child.y = 0;
+        data.push(child);
+      }
+    }
+
+    let { width } = this.selection.node().getBoundingClientRect();
     let sel = this.selection.selectAll(treeElementSelector).data(data, d => d.data._id)
-
-    let enter = sel.enter().append(d => this.createChild(d))
 
     let t1 = d3.transition().duration(500);
     let t2 = d3.transition().duration(500);
 
-    sel.exit()
+    let exiting = sel.exit()
       .classed('exiting', true)
-      .transition(t1)
-      .style('transform', d => {
-        let par = data.find(p => d.parent.data._id == p.data._id);
-        if (par) {
-          return 'translate(' + d.y*elementHeight + 'px,' + par.x*elementHeight + 'px)';
-        }
-      })
-      .on('end', function(d, i) {
-        viewContainer.remove(viewContainer.indexOf(d._component));
-      });
 
+    let entering = sel.enter()
+      .append(d => this.createChild(d))
 
-    enter
-      .classed('entering', true)
-      .transition(t2)
+    entering
       .each(d => {
         let par = data.find(p => d.parent.data._id == p.data._id);
         if (par) {
           d.parent = par;
         }
       })
-      .style('width', (d) => (width - d.parent.y*elementHeight) + 'px')
-      .style('transform', (d) => 'translate(' + d.y*elementHeight + 'px,' + d.parent.x*elementHeight + 'px)');
 
-    sel = enter.merge(sel)
+    entering
+      .classed('entering', true)//.transition(t2)
+      .style('width', (d) => (width - d.parent.y*elementHeight) + 'px')
+      .style('top', (d) => d.parent.x*elementHeight + 'px')
+      .style('left', (d) => d.y*elementHeight + 'px');
+      //.style('transform', (d) => 'translate(' + d.y*elementHeight + 'px,' + d.parent.x*elementHeight + 'px)');
+
+
+    if (animate) {
+      exiting.transition(t1)
+        //.style('transform', d => {
+        //  let par = data.find(p => d.parent.data._id == p.data._id);
+        //  if (par) {
+        //    return 'translate(' + d.y*elementHeight + 'px,' + par.x*elementHeight + 'px)';
+        //  }
+        //})
+        .style('top', d => {
+          let par = data.find(p => d.parent.data._id == p.data._id);
+          if (par) {
+            return par.x*elementHeight + 'px';
+          }
+        })
+        .on('end', d => {
+          this.destroyChild(d._component);
+        });
+    } else {
+      exiting.each(d => {
+        this.destroyChild(d._component);
+      });
+    }
+
+    sel = entering.merge(sel)
 
     let stream = sel;
-    if (swap(viewType, oldViewType)) {
-    //if (oldViewType == 'large-icons' || oldViewType == 'icons' || oldViewType == 'tree') {
-      stream = stream.transition(t1)
-        .style('width', width + 'px')
-        .style('height', `${ elementHeight+1 }px`)
-        .style('transform', (d) => 'translate(0px,' + d.x*elementHeight + 'px)')
+
+    stream.classed('moving', true);
+
+    if (oldViewType && viewType && (
+      (oldViewType.includes('icons') && viewType == 'tree') ||
+      (oldViewType == 'tree' && viewType.includes('icons')))) {
+      if (animate) {
+        stream = stream.transition(t1)
+      }
+      style('list', stream, width);
     }
 
     if (viewType == 'tree') {
-      stream = stream.transition(t2)
-        .style('width', (d) => (width - d.y*elementHeight) + 'px')
-        .style('height', `${ elementHeight+1 }px`)
-        .style('transform', (d) => 'translate(' + d.y*elementHeight + 'px,' + d.x*elementHeight + 'px)')
-      this.selection.transition(t2).style('height', data.length*elementHeight + 'px');
-
+      if (animate) {
+        stream = stream.transition(t2)
+        this.selection.transition(t2).style('height', data.length*elementHeight + 'px');
+      } else {
+        this.selection.style('height', data.length*elementHeight + 'px');
+      }
+      style(viewType, stream, width);
     }
 
     if (viewType == 'list') {
-      stream = stream.transition(t2)
-        .style('width', width + 'px')
-        .style('height', `${ elementHeight+1 }px`)
-        .style('transform', (d) => 'translate(0px,' + d.x*elementHeight + 'px)')
-      this.selection.transition(t1).style('height', data.length*elementHeight + 'px');
-
+      if (animate) {
+        stream = stream.transition(t2)
+        this.selection.transition(t1).style('height', data.length*elementHeight + 'px');
+      } else {
+        this.selection.style('height', data.length*elementHeight + 'px');
+      }
+      style(viewType, stream, width);
     }
 
     if (viewType == 'icons') {
-      let w = Math.floor(width / 150);
-      stream = stream.transition(t2)
-        .style('width', '140px')
-        .style('height', `${ elementHeight+1 }px`)
-        .style('transform', (d, i) => `translate(${ (i % w)*150 }px, ${ Math.floor(i / w)*50 }px)`);
-      this.selection.transition(t2).style('height', data.length*elementHeight + 'px');
+      let w = Math.floor(width / (iconWidth + iconPadding));
+      if (animate) {
+        stream = stream.transition(t2)
+        this.selection.transition(t2).style('height', data.length*elementHeight + 'px');
+      } else {
+        this.selection.style('height', data.length*elementHeight + 'px');
+      }
+      style(viewType, stream, width);
     }
 
     if (viewType == 'large-icons') {
-      let w = Math.floor(width / 150);
-      stream = stream.transition(t2)
-        .style('width', '140px')
-        .style('height', '140px')
-        .style('transform', (d, i) => `translate(${ (i % w)*150 }px, ${ Math.floor(i / w)*150 }px)`);
-      this.selection.transition(t2).style('height', data.length*elementHeight + 'px');
+      let w = Math.floor(width / (iconWidth + iconPadding));
+      if (animate) {
+        stream = stream.transition(t2)
+        this.selection.transition(t2).style('height', data.length*elementHeight + 'px');
+      } else {
+        this.selection.style('height', data.length*elementHeight + 'px');
+      }
+      style(viewType, stream, width);
     }
 
-    stream.on('end', function() { d3.select(this).classed('entering', false) });
+    if (animate) {
+      stream.on('end', function() {
+        d3.select(this)
+          .classed('entering', false)
+          .classed('moving', false)
+      });
+    } else {
+      stream.classed('entering', false).classed('moving', false);
+    }
+
   }
 }
 
-function swap(a, b) {
-  if (!a || !b) return false;
-  if (a == 'list' || b == 'list') return false;
-  return (a.includes('icon') && !b.includes('icon')) || (!a.includes('icon') && b.includes('icon'))
+function style(name, sel, width) {
+  switch (name) {
+    case 'tree':
+      sel.style('width', (d) => (width - d.y*elementHeight) + 'px')
+         .style('height', `${ elementHeight+1 }px`)
+         //.style('transform', (d) => 'translate(' + d.y*elementHeight + 'px,' + d.x*elementHeight + 'px)')
+         .style('top', (d) => d.x*elementHeight + 'px')
+         .style('left', (d) => d.y*elementHeight + 'px');
+
+      break;
+
+    case 'list':
+      sel.style('width', width + 'px')
+         .style('height', `${ elementHeight+1 }px`)
+         //.style('transform', (d) => 'translate(0px,' + d.x*elementHeight + 'px)')
+         .style('left', 0 + 'px')
+         .style('top', (d) => d.x*elementHeight + 'px')
+
+      break;
+
+    case 'icons':
+    case 'large-icons':
+      let w = Math.floor(width / (iconWidth + iconPadding));
+      let height = name == 'icons' ? elementHeight : iconWidth;
+      sel.style('width', iconWidth + 'px')
+         .style('height', `${ height }px`)
+         //.style('transform', (d, i) => `translate(${ (i % w)*(iconWidth + iconPadding) }px, ${ Math.floor(i / w)*(height + iconPadding) }px)`);
+         .style('top', (d, i) => Math.floor(i / w)*(height + iconPadding) + 'px')
+         .style('left', (d, i) => (i % w)*(iconWidth + iconPadding) + 'px');
+
+      break;
+  }
 }

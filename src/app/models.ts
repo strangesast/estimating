@@ -1,6 +1,7 @@
 export class ProjectObject {
   _id: string;
   _previousHash?: string;
+  _open?: boolean;
   _hash?: string;
   _path?: string;
   _buffer?: Uint8Array;
