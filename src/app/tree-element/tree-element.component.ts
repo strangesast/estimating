@@ -9,7 +9,7 @@ export const treeElementSelector = 'app-tree-element';
   styleUrls: ['./tree-element.component.less'],
   host: {
     'tabindex': '1',
-    'draggable': '"true"'
+    'draggable': 'true'
   }
 })
 export class TreeElementComponent implements OnInit {

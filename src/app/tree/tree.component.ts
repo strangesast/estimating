@@ -196,7 +196,6 @@ export class TreeComponent implements OnInit, OnChanges {
     }
 
     if (viewType == 'icons') {
-      let w = Math.floor(width / (iconWidth + iconPadding));
       if (animate) {
         stream = stream.transition(t2)
         this.selection.transition(t2).style('height', data.length*elementHeight + 'px');
@@ -207,7 +206,6 @@ export class TreeComponent implements OnInit, OnChanges {
     }
 
     if (viewType == 'large-icons') {
-      let w = Math.floor(width / (iconWidth + iconPadding));
       if (animate) {
         stream = stream.transition(t2)
         this.selection.transition(t2).style('height', data.length*elementHeight + 'px');
@@ -235,7 +233,6 @@ function style(name, sel, width) {
     case 'tree':
       sel.style('width', (d) => (width - d.y*elementHeight) + 'px')
          .style('height', `${ elementHeight+1 }px`)
-         //.style('transform', (d) => 'translate(' + d.y*elementHeight + 'px,' + d.x*elementHeight + 'px)')
          .style('top', (d) => d.x*elementHeight + 'px')
          .style('left', (d) => d.y*elementHeight + 'px');
 
@@ -244,7 +241,6 @@ function style(name, sel, width) {
     case 'list':
       sel.style('width', width + 'px')
          .style('height', `${ elementHeight+1 }px`)
-         //.style('transform', (d) => 'translate(0px,' + d.x*elementHeight + 'px)')
          .style('left', 0 + 'px')
          .style('top', (d) => d.x*elementHeight + 'px')
 
@@ -254,11 +250,11 @@ function style(name, sel, width) {
     case 'large-icons':
       let w = Math.floor(width / (iconWidth + iconPadding));
       let height = name == 'icons' ? elementHeight : iconWidth;
-      sel.style('width', iconWidth + 'px')
+      let aw = width / w - iconPadding;
+      sel.style('width', aw + 'px')
          .style('height', `${ height }px`)
-         //.style('transform', (d, i) => `translate(${ (i % w)*(iconWidth + iconPadding) }px, ${ Math.floor(i / w)*(height + iconPadding) }px)`);
          .style('top', (d, i) => Math.floor(i / w)*(height + iconPadding) + 'px')
-         .style('left', (d, i) => (i % w)*(iconWidth + iconPadding) + 'px');
+         .style('left', (d, i) => (i % w)*(aw + iconPadding) + 'px');
 
       break;
   }
