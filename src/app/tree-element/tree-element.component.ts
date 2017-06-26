@@ -8,7 +8,8 @@ export const treeElementSelector = 'app-tree-element';
   templateUrl: './tree-element.component.html',
   styleUrls: ['./tree-element.component.less'],
   host: {
-    'tabindex': '1'
+    'tabindex': '1',
+    'draggable': '"true"'
   }
 })
 export class TreeElementComponent implements OnInit {
