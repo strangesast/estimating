@@ -31,7 +31,8 @@ export class ProjectTreeComponent implements OnInit, AfterViewInit {
     this.view = view;
   }
 
-  path = ['root', 'folder 1', 'folder 2', 'folder 3'];
+  //path = ['root', 'folder 1', 'folder 2', 'folder 3'];
+  path = ['root'];
   pathIndex = 3;
 
   setPathIndex(i) {

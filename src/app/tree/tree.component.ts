@@ -250,7 +250,7 @@ function style(name, sel, width) {
     case 'large-icons':
       let w = Math.floor(width / (iconWidth + iconPadding));
       let height = name == 'icons' ? elementHeight : iconWidth;
-      let aw = width / w - iconPadding;
+      let aw = width / w - iconPadding*(w - 1)/w;
       sel.style('width', aw + 'px')
          .style('height', `${ height }px`)
          .style('top', (d, i) => Math.floor(i / w)*(height + iconPadding) + 'px')
