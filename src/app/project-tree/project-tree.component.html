@@ -1,7 +1,7 @@
 <header>
   <div class="path">
     <div><span>Project:</span></div>
-    <div *ngFor="let p of path; let i = index" [class.inactive]="i > pathIndex" (click)="setPathIndex(i)"><span>{{ p }}</span></div>
+    <div *ngFor="let path of path; let i = index" [class.inactive]="i > pathIndex" (click)="setPathIndex(i)"><span>{{ path.name }}</span></div>
   </div>
   <span class="spacer"></span>
   <div top-right class="dropdown settings">
@@ -19,11 +19,11 @@
   <div class='name'><span>Name</span><span class="icon fa fa-arrow-down"></span></div>
 </div>
 <div class="tree">
-  <div *tree="let tree of tree; view: view" class="tree-element">
+  <div *tree="let node of tree; view: view; updates: treeUpdates" class="tree-element" tabindex=1 draggable="true" (dragstart)="dragstart(node)">
     <span class="icon fa fa-fw" [ngClass]="draggedOver ? 'fa-folder-open-o' : 'fa-folder-o'"></span>
-    <span class="name" [title]="tree.data.name">{{ tree.data.name }}</span>
+    <span class="name" [title]="node.data.name" (dblclick)="dblclicked(node)">{{ node.data.name }}</span>
     <span class="spacer"></span>
-    <span *ngIf="children && children.length" class="expand icon fa fa-angle-down"></span>
+    <span *ngIf="view == 'tree' && node.data._children" [class.open]="node.data._open" class="expand icon fa fa-fw fa-angle-down" (click)="toggleChildren(node)"></span>
     <div class="dropdown">
       <span tabindex="-1" class="fa fa-fw fa-ellipsis-v"></span>
       <div>
@@ -33,14 +33,3 @@
     </div>
   </div>
 </div>
-<!--
-<div class="tree" [class.activeChild]="activeChild">
-  <div *appTree="let element of treeValue" [attr.depth]="element.y" [class.active]="activeChild == element.data._id" (click)="clicked(element)">
-    <span class="icon fa fa-folder-o"></span>
-    <a [routerLink]="[ (element.data | objToType), element.data._id ]" class="name">{{ element.data.name }}</a>
-    <span class="spacer"></span>
-    <span class="icon open fa fa-angle-down" [class.collapsed]="element._children" *ngIf="(element.children || element._children)?.length"></span>
-    <span class="icon fa fa-ellipsis-h" *ngIf="!element.data.children && !element.data._children"></span>
-  </div>
-</div>
--->

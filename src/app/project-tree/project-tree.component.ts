@@ -14,10 +14,9 @@ import * as d3 from 'd3';
 export class ProjectTreeComponent {
   ngUnsubscribe: Subject<boolean> = new Subject();
 
-
-
   cachedTree;
-  tree: d3.HierarchyNode
+  tree: d3.HierarchyNode;
+  treeUpdates = new Subject<any>();
 
   view = 'list';
   viewToClass = {
@@ -51,10 +50,26 @@ export class ProjectTreeComponent {
     this.ngUnsubscribe.complete();
   }
 
+  async setRoot(node) {
+    this.path = await this.project.cachedTree.getPath(node._id);
+    this.tree = node;
+  }
+  
+  dblclicked(node) {
+    this.setRoot(node.data);
+  }
+
   clicked(d) {
     if (!(d instanceof d3.hierarchy)) {
       throw new Error('invalid type');
     }
-    console.log(d);
+  }
+
+  dragstart(tree) {
+  }
+
+  toggleChildren(node) {
+    node.data._open = !node.data._open;
+    this.treeUpdates.next();
   }
 }

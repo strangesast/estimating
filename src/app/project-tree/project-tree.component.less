@@ -103,6 +103,10 @@ header {
     text-overflow: ellipsis;
   }
 
+  & > .expand.open {
+    transform: rotate(180deg);
+  }
+
   & > .icon {
     padding: 8px;
     flex-shrink: 0;
@@ -111,9 +115,6 @@ header {
     }
   }
 
-  & > .expand {
-    display: none;
-  }
   & > .grip {
     cursor: grab;
   }

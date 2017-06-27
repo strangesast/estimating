@@ -13,8 +13,7 @@ import {
 import { CachedTree } from './cached-tree';
 
 import { ProjectObject, ProjectFolder } from './models';
-
-import { Store } from './store';
+import { Subject } from 'rxjs';
 
 import { HierarchyNode, Selection } from 'd3';
 import * as d3 from 'd3';
@@ -35,9 +34,18 @@ const treeElementSelector = '.tree-element';
 export class TreeOf<T> {// implements OnChanges {
   @Input('treeOf') tree: HierarchyNode<ProjectFolder>;
   @Input('treeView') view: string;
+  @Input('treeUpdates') updates: Subject<any>;
   componentMap = new Map();
 
   constructor(private viewContainer: ViewContainerRef, private template: TemplateRef<any>) {}
+
+  ngOnInit() {
+    if (this.updates) {
+      this.updates.subscribe(() => {
+        this.update(this.tree, this.view);
+      });
+    }
+  }
 
   ngOnChanges(changes: SimpleChanges) {
     if ('view' in changes) {
@@ -71,7 +79,8 @@ export class TreeOf<T> {// implements OnChanges {
     let self = this;
     let root;
     if (viewType == 'tree') {
-      root = d3.hierarchy(node, (d) => d._children && Object.keys(d._children).map(id => d._children[id]))
+      node._open = true;
+      root = d3.hierarchy(node, (d) => d._open && d._children && Object.keys(d._children).map(id => d._children[id]))
     } else {
       root = d3.hierarchy(node, (d) => d == node || (d._id in node._children) ? (d._children && Object.keys(d._children).map(id => d._children[id])) : null );
     }
