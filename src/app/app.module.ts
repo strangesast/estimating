@@ -14,16 +14,12 @@ import { ReportsComponent } from './reports/reports.component';
 import { ProjectTreeComponent } from './project-tree/project-tree.component';
 import { ComponentTreeComponent } from './component-tree/component-tree.component';
 import { Store } from './store';
-import { TreeDirective } from './tree.directive';
 import { HistoryComponent } from './history/history.component';
 import { ProjectSettingsComponent } from './project-settings/project-settings.component';
-import { TreeElementViewComponent } from './tree-element-view/tree-element-view.component';
 import { ObjToTypePipe } from './obj-to-type.pipe';
 import { HistoryChooserComponent } from './history-chooser/history-chooser.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
-import { TreeComponent } from './tree/tree.component';
-import { TreeElementComponent } from './tree-element/tree-element.component';
-import { TreeService } from './tree.service';
+import { TreeOf } from './tree.directive';
 
 @NgModule({
   imports: [
@@ -40,20 +36,15 @@ import { TreeService } from './tree.service';
     ReportsComponent,
     ProjectTreeComponent,
     ComponentTreeComponent,
-    TreeDirective,
     HistoryComponent,
     ProjectSettingsComponent,
-    TreeElementViewComponent,
     ObjToTypePipe,
     HistoryChooserComponent,
     DashboardComponent,
-    TreeComponent,
-    TreeElementComponent
+    TreeOf
   ],
-  providers: [ProjectService, Store, TreeService],
+  providers: [ProjectService, Store],
   bootstrap: [AppComponent],
-  entryComponents: [
-    TreeElementComponent
-  ]
+  entryComponents: []
 })
 export class AppModule { }

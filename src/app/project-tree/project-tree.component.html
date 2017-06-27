@@ -18,7 +18,21 @@
   <div class="icon fa fa-fw"></div>
   <div class='name'><span>Name</span><span class="icon fa fa-arrow-down"></span></div>
 </div>
-<app-tree [view]="view"></app-tree>
+<div class="tree">
+  <div *tree="let tree of tree; view: view" class="tree-element">
+    <span class="icon fa fa-fw" [ngClass]="draggedOver ? 'fa-folder-open-o' : 'fa-folder-o'"></span>
+    <span class="name" [title]="tree.data.name">{{ tree.data.name }}</span>
+    <span class="spacer"></span>
+    <span *ngIf="children && children.length" class="expand icon fa fa-angle-down"></span>
+    <div class="dropdown">
+      <span tabindex="-1" class="fa fa-fw fa-ellipsis-v"></span>
+      <div>
+        <a>Rename</a>
+        <a>Details</a>
+      </div>
+    </div>
+  </div>
+</div>
 <!--
 <div class="tree" [class.activeChild]="activeChild">
   <div *appTree="let element of treeValue" [attr.depth]="element.y" [class.active]="activeChild == element.data._id" (click)="clicked(element)">

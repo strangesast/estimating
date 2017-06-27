@@ -62,3 +62,59 @@ header {
     padding: 8px;
   }
 }
+
+.tree {
+  position: relative;
+  display: block;
+  width: 100%;
+}
+.tree > .tree-element.moving {
+  z-index: 1;
+  &.exiting, &.entering {
+    z-index: 0;
+  }
+}
+
+.tree > .tree-element {
+  //transition: width 0.5s ease, transform 0.5s ease;
+  position: absolute;
+  user-select: none;
+  box-sizing: border-box;
+  cursor: default;
+  display: flex;
+  &:hover {
+    background: #f7f7f7;
+  }
+  &:focus {
+    outline: none;
+    background: #f1f1f1;
+  }
+  //box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+  box-shadow: 0 3px 6px #d1d1d1, 0 3px 6px #c0c0c0;
+  border: 1px solid @border-color;
+  background: @background;
+  align-items: center;
+  //width: 100%;
+  //height: 41px;
+
+  & > .name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  & > .icon {
+    padding: 8px;
+    flex-shrink: 0;
+    &.background:hover {
+      background: rgba(0, 0, 0, 0.05);
+    }
+  }
+
+  & > .expand {
+    display: none;
+  }
+  & > .grip {
+    cursor: grab;
+  }
+}

@@ -11,13 +11,13 @@ import * as d3 from 'd3';
   templateUrl: './project-tree.component.html',
   styleUrls: ['./project-tree.component.less']
 })
-export class ProjectTreeComponent implements OnInit, AfterViewInit {
-  @ViewChild('tree') tree
-  treeValue: any;
-  activeChild: string = null;
+export class ProjectTreeComponent {
   ngUnsubscribe: Subject<boolean> = new Subject();
 
+
+
   cachedTree;
+  tree: d3.HierarchyNode
 
   view = 'list';
   viewToClass = {
@@ -42,15 +42,8 @@ export class ProjectTreeComponent implements OnInit, AfterViewInit {
   constructor(private project: ProjectTreeService, private store: Store, private route: ActivatedRoute) { }
 
   ngOnInit() {
-    this.project.buildingFolders.takeUntil(this.ngUnsubscribe).subscribe(vals => this.treeValue = vals);
-
     this.route.params.subscribe(() => console.log('params'));
-
-    this.project.activeChild.subscribe(child => this.activeChild = child);
-  }
-
-  ngAfterViewInit() {
-    //console.log(d3.select(this.tree.nativeElement));
+    this.tree = this.project.cachedTree.root;
   }
 
   ngOnDestroy() {

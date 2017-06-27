@@ -1,14 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { HostBinding, Component, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.less'],
-  host: {
-    '[class.side]': 'side'
-  }
+  styleUrls: ['./dashboard.component.less']
 })
 export class DashboardComponent implements OnInit {
+  @HostBinding('class.side')
   side: boolean = true;
 
   constructor() { }
