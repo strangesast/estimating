@@ -18,6 +18,21 @@ export class TreeElementComponent implements OnInit {
   @Input() height: number;
   @Input() children: any[];
 
+  draggedOver: boolean = false;
+
+  @HostListener('dragstart', ['$event']) dragdrop(e) {
+    console.log('start');
+  }
+
+  @HostListener('dragenter', ['$event']) dragenter(e) {
+    this.draggedOver = true;
+  }
+
+  @HostListener('dragleave', ['$event']) dragleave(e) {
+    this.draggedOver = false;
+  }
+
+
   constructor(public tree: TreeService) { }
 
   ngOnInit() {}

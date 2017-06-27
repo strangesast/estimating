@@ -1,4 +1,4 @@
-<span class="icon fa fa-fw fa-folder-o"></span>
+<span class="icon fa fa-fw" [ngClass]="draggedOver ? 'fa-folder-open-o' : 'fa-folder-o'"></span>
 <span class="name" [title]="data.name">{{ data.name }}</span>
 <span class="spacer"></span>
 <span *ngIf="children && children.length" class="expand icon fa fa-angle-down"></span>

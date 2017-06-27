@@ -10,12 +10,10 @@ import { Store } from '../store';
 import { HiearchyNode, Selection } from 'd3';
 import * as d3 from 'd3';
 
-let elementHeight = 40;
-
-const iconWidth = 150;
+const elementHeight = 40;
+const minimumIconWidth = 150;
 const iconPadding = 10;
  
-// handle opening / closing 
 @Component({
   selector: 'app-tree',
   templateUrl: './tree.component.html',
@@ -38,15 +36,11 @@ export class TreeComponent implements OnInit, OnChanges {
   _componentFactory: ComponentFactory<TreeElementComponent>;
   selection: Selection;
 
-  // viewtypes
-  //   list
-  //     vertical list, one folder depth at a time
-  //   tree
-  //     indented list, multiple depths
-  //   icons, large-icons
-  //     arranged squares
-
-  constructor(private _componentFactoryResolver: ComponentFactoryResolver, private _viewContainer: ViewContainerRef, private tree: TreeService) { }
+  constructor(
+    private _componentFactoryResolver: ComponentFactoryResolver,
+    private _viewContainer: ViewContainerRef,
+    private tree: TreeService
+  ) { }
 
   async ngOnInit() {
     this._componentFactory = this._componentFactoryResolver.resolveComponentFactory(TreeElementComponent);
@@ -131,20 +125,13 @@ export class TreeComponent implements OnInit, OnChanges {
 
     entering
       .classed('entering', true)//.transition(t2)
-      .style('width', (d) => (width - d.parent.y*elementHeight) + 'px')
+      .style('width', (d) => (width - d.y*elementHeight) + 'px')
       .style('top', (d) => d.parent.x*elementHeight + 'px')
       .style('left', (d) => d.y*elementHeight + 'px');
-      //.style('transform', (d) => 'translate(' + d.y*elementHeight + 'px,' + d.parent.x*elementHeight + 'px)');
-
 
     if (animate) {
+      this.selection.transition(t2).style('height', data.length*elementHeight + 'px');
       exiting.transition(t1)
-        //.style('transform', d => {
-        //  let par = data.find(p => d.parent.data._id == p.data._id);
-        //  if (par) {
-        //    return 'translate(' + d.y*elementHeight + 'px,' + par.x*elementHeight + 'px)';
-        //  }
-        //})
         .style('top', d => {
           let par = data.find(p => d.parent.data._id == p.data._id);
           if (par) {
@@ -155,76 +142,39 @@ export class TreeComponent implements OnInit, OnChanges {
           this.destroyChild(d._component);
         });
     } else {
+      this.selection.style('height', data.length*elementHeight + 'px');
       exiting.each(d => {
         this.destroyChild(d._component);
       });
     }
 
-    sel = entering.merge(sel)
 
-    let stream = sel;
-
-    stream.classed('moving', true);
+    sel = entering.merge(sel).classed('moving', true);
 
     if (oldViewType && viewType && (
       (oldViewType.includes('icons') && viewType == 'tree') ||
       (oldViewType == 'tree' && viewType.includes('icons')))) {
       if (animate) {
-        stream = stream.transition(t1)
+        sel = sel.transition(t1)
       }
-      style('list', stream, width);
-    }
-
-    if (viewType == 'tree') {
-      if (animate) {
-        stream = stream.transition(t2)
-        this.selection.transition(t2).style('height', data.length*elementHeight + 'px');
-      } else {
-        this.selection.style('height', data.length*elementHeight + 'px');
-      }
-      style(viewType, stream, width);
-    }
-
-    if (viewType == 'list') {
-      if (animate) {
-        stream = stream.transition(t2)
-        this.selection.transition(t1).style('height', data.length*elementHeight + 'px');
-      } else {
-        this.selection.style('height', data.length*elementHeight + 'px');
-      }
-      style(viewType, stream, width);
-    }
-
-    if (viewType == 'icons') {
-      if (animate) {
-        stream = stream.transition(t2)
-        this.selection.transition(t2).style('height', data.length*elementHeight + 'px');
-      } else {
-        this.selection.style('height', data.length*elementHeight + 'px');
-      }
-      style(viewType, stream, width);
-    }
-
-    if (viewType == 'large-icons') {
-      if (animate) {
-        stream = stream.transition(t2)
-        this.selection.transition(t2).style('height', data.length*elementHeight + 'px');
-      } else {
-        this.selection.style('height', data.length*elementHeight + 'px');
-      }
-      style(viewType, stream, width);
+      style('list', sel, width);
     }
 
     if (animate) {
-      stream.on('end', function() {
+      sel = sel.transition(t2)
+    }
+
+    style(viewType, sel, width);
+
+    if (animate) {
+      sel.on('end', function() {
         d3.select(this)
           .classed('entering', false)
           .classed('moving', false)
       });
     } else {
-      stream.classed('entering', false).classed('moving', false);
+      sel.classed('entering', false).classed('moving', false);
     }
-
   }
 }
 
@@ -248,8 +198,8 @@ function style(name, sel, width) {
 
     case 'icons':
     case 'large-icons':
-      let w = Math.floor(width / (iconWidth + iconPadding));
-      let height = name == 'icons' ? elementHeight : iconWidth;
+      let w = Math.floor(width / (minimumIconWidth + iconPadding));
+      let height = name == 'icons' ? elementHeight : minimumIconWidth;
       let aw = width / w - iconPadding*(w - 1)/w;
       sel.style('width', aw + 'px')
          .style('height', `${ height }px`)
