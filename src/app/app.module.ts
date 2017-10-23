@@ -21,12 +21,23 @@ import { HistoryChooserComponent } from './history-chooser/history-chooser.compo
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { TreeOf } from './tree.directive';
 
+import { StoreModule } from '@ngrx/store';
+import { EffectsModule } from '@ngrx/effects';
+import { reducers } from './reducers';
+import { MainEffects } from './effects';
+
 @NgModule({
   imports: [
     BrowserModule,
     FormsModule,
     HttpModule,
-    AppRoutingModule
+    AppRoutingModule,
+    StoreModule.forRoot(reducers, {
+      initialState: {}
+    }),
+    EffectsModule.forRoot([
+      MainEffects
+    ])
   ],
   declarations: [
     AppComponent,
